@@ -4,7 +4,7 @@ Spatial Summarize Within is a Python package that simplifies the process of summ
 
 ## Installation
 
-You can install Geo Summarizer using pip:
+You can install Spatial Summarize Within using pip:
 
 ```bash
 pip install spatial_summarize_within
