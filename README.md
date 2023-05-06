@@ -43,7 +43,7 @@ The result variable will contain a GeoDataFrame with the summarized data.
 In this example, we will summarize population data within an input shapefile using an overlay shapefile.
 
 ```
-from geo_summarizer.summarizer import summarize_within
+from spatial_summarize_within.summarize_within import summarize_within
 import geopandas as gpd
 
 # Load input and overlay shapefiles
