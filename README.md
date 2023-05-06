@@ -9,7 +9,7 @@ You can install Spatial Summarize Within using pip:
 ```bash
 pip install spatial_summarize_within
 ```
-Geo Summarizer has the following dependencies, which will be installed automatically:
+Spatial Summarize Within has the following dependencies, which will be installed automatically:
 
 geopandas
 pandas
