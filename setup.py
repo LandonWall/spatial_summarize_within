@@ -7,5 +7,7 @@ setup(
     install_requires=[
         "geopandas",
         "pandas",
+        "shapely",
+        "mapclassify",
     ],
 )
