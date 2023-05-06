@@ -47,19 +47,19 @@ from spatial_summarize_within import summarize_within
 import geopandas as gpd
 
 # Load input and overlay shapefiles
-input_shapefile = gpd.read_file("path/to/your/input_shapefile.shp")
-overlay_shapefile = gpd.read_file("path/to/your/overlay_shapefile.shp")
+CENSUS_TRACTS_SHAPEFILE = gpd.read_file("path/to/your/input_shapefile.shp")
+COUNTIES_SHAPEFILE = gpd.read_file("path/to/your/overlay_shapefile.shp")
 
 # Call the summarize_within function
 result = summarize_within(
-    input_shapefile=input_shapefile,
-    overlay_shapefile=overlay_shapefile,
+    input_shapefile=CENSUS_TRACTS_SHAPEFILE,
+    overlay_shapefile=COUNTIES_SHAPEFILE,
     columns_to_sum=[
         "total_population",
         "urban_population",
         "rural_population",
     ],
-    key_to_group_by="region_id"
+    key_to_group_by="county_name"
 )
 
 # Save the result to a new shapefile
