@@ -18,7 +18,7 @@ mapclassifier
 
 # Usage
 To use Spatial Summarize Within you'll first need to import the summarize_within function:
-from spatial_summarize_within.summarize_within import summarize_within
+from spatial_summarize_within import summarize_within
 
 Next, call the summarize_within function with your input and overlay shapefiles, the columns you want to sum, and the key to group the results by:
 ```
@@ -43,7 +43,7 @@ The result variable will contain a GeoDataFrame with the summarized data.
 In this example, we will summarize population data within an input shapefile using an overlay shapefile.
 
 ```
-from spatial_summarize_within.summarize_within import summarize_within
+from spatial_summarize_within import summarize_within
 import geopandas as gpd
 
 # Load input and overlay shapefiles
