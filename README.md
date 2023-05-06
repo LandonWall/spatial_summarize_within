@@ -18,7 +18,9 @@ mapclassifier
 
 # Usage
 To use Spatial Summarize Within you'll first need to import the summarize_within function:
+```
 from spatial_summarize_within import summarize_within
+```
 
 Next, call the summarize_within function with your input and overlay shapefiles, the columns you want to sum, and the key to group the results by:
 ```
