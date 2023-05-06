@@ -42,7 +42,7 @@ result = summarize_within(
 The result variable will contain a GeoDataFrame with the summarized data.
 
 # Example
-In this example, we will summarize population data within an input shapefile using an overlay shapefile.
+In this example, we will aggregate population data within census tracts by county.
 
 ```
 from spatial_summarize_within import summarize_within
