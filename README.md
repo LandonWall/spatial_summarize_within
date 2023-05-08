@@ -9,7 +9,7 @@ You can install Spatial Summarize Within using pip:
 ```bash
 pip install spatial_summarize_within
 ```
-Geo Summarizer has the following dependencies, which will be installed automatically:
+Spatial Summarize Within has the following dependencies, which will be installed automatically:
 
 geopandas
 pandas
@@ -18,7 +18,9 @@ mapclassifier
 
 # Usage
 To use Spatial Summarize Within you'll first need to import the summarize_within function:
-from spatial_summarize_within.summarize_within import summarize_within
+```
+from spatial_summarize_within import summarize_within
+```
 
 Next, call the summarize_within function with your input and overlay shapefiles, the columns you want to sum, and the key to group the results by:
 ```
@@ -40,26 +42,26 @@ result = summarize_within(
 The result variable will contain a GeoDataFrame with the summarized data.
 
 # Example
-In this example, we will summarize population data within an input shapefile using an overlay shapefile.
+In this example, we will aggregate population data within census tracts by county.
 
 ```
-from spatial_summarize_within.summarize_within import summarize_within
+from spatial_summarize_within import summarize_within
 import geopandas as gpd
 
 # Load input and overlay shapefiles
-input_shapefile = gpd.read_file("path/to/your/input_shapefile.shp")
-overlay_shapefile = gpd.read_file("path/to/your/overlay_shapefile.shp")
+CENSUS_TRACTS_SHAPEFILE = gpd.read_file("path/to/your/input_shapefile.shp")
+COUNTIES_SHAPEFILE = gpd.read_file("path/to/your/overlay_shapefile.shp")
 
 # Call the summarize_within function
 result = summarize_within(
-    input_shapefile=input_shapefile,
-    overlay_shapefile=overlay_shapefile,
+    input_shapefile=CENSUS_TRACTS_SHAPEFILE,
+    overlay_shapefile=COUNTIES_SHAPEFILE,
     columns_to_sum=[
         "total_population",
         "urban_population",
         "rural_population",
     ],
-    key_to_group_by="region_id"
+    key_to_group_by="county_name"
 )
 
 # Save the result to a new shapefile
