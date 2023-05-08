@@ -34,6 +34,8 @@ def summarize_within(input_shapefile, overlay_shapefile, columns_to_sum, key_to_
         columns = columns_to_sum
         for column in columns:
             temp_intersect[column] = (temp_intersect[column] * temp_intersect["overlap_pct"]).round(0)
+        # Keep only the relevant columns in the temp_intersect dataframe
+        temp_intersect = temp_intersect[[key_to_group_by] + columns + ['intersect_area', 'overlap_pct']]
         # Group the results
         temp_result = temp_intersect.groupby(key_to_group_by).sum(numeric_only=True).reset_index()
         # Append the results to the result gdf
