@@ -7,7 +7,6 @@ from shapely.geometry import Polygon, MultiPolygon, shape, Point
 import geopandas as gpd
 import mapclassify
 
-
 # Function
 def summarize_within(input_shapefile, overlay_shapefile, columns_to_sum, key_to_group_by):
     # Read input and overlay shapefiles
