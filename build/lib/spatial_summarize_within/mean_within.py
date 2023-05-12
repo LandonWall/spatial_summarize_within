@@ -33,7 +33,7 @@ def mean_within(input_shapefile, input_summary_features, columns, key):
         # Calculate the weighted mean
         columns = columns
         for column in columns:
-            temp_intersect[column] = (temp_intersect[column] * temp_intersect["overlap_pct"])
+            temp_intersect[column] = (temp_intersect[column] * temp_intersect["overlap_pct"]).round(0)
         # Keep only the relevant columns in the temp_intersect dataframe
         temp_intersect = temp_intersect[[key] + columns + ['intersect_area', 'overlap_pct']]
         # Group the results and calculate the mean
