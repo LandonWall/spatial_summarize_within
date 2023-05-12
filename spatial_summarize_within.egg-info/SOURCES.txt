@@ -2,7 +2,10 @@ LICENSE
 README.md
 setup.py
 spatial_summarize_within/__init__.py
-spatial_summarize_within/summarize_within.py
+spatial_summarize_within/max_within.py
+spatial_summarize_within/mean_within.py
+spatial_summarize_within/min_within.py
+spatial_summarize_within/sum_within.py
 spatial_summarize_within.egg-info/PKG-INFO
 spatial_summarize_within.egg-info/SOURCES.txt
 spatial_summarize_within.egg-info/dependency_links.txt

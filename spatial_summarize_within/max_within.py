@@ -8,43 +8,42 @@ import geopandas as gpd
 import mapclassify
 
 # Function
-def summarize_within(input_shapefile, overlay_shapefile, columns_to_sum, key_to_group_by):
+def max_within(input_shapefile, input_summary_features, columns, key):
     # Read input and overlay shapefiles
-    input = input_shapefile
-    overlay = overlay_shapefile
+    input_shapefile = input_shapefile
+    input_summary_features = input_summary_features
 
     # Add area column to input geodataframe
-    input["area"] = input.geometry.area
+    input_summary_features["area"] = input_summary_features.geometry.area
     # Create an empty geodataframe to store the results
     result_gdf = gpd.GeoDataFrame()
 
     # Loop through each polygon in the overlay geodataframe
-    for index, row in overlay.iterrows():
+    for index, row in input_shapefile.iterrows():
         # Create a temporary geodataframe with just the current overlay polygon
-        temp_overlay = gpd.GeoDataFrame([row], columns=overlay.columns)
+        temp_overlay = gpd.GeoDataFrame([row], columns=input_shapefile.columns)
         # set crs
         temp_overlay = temp_overlay.set_crs("EPSG:3395")
         # Intersect the input geodataframe with the current overlay polygon
         temp_intersect = gpd.overlay(input, temp_overlay, how='intersection')
-        # Calculate the area of each polygon in the intersect geodataframe
+        # Calculate the area of each polygon in intersect dataframe
         temp_intersect["intersect_area"] = temp_intersect.area
         # Calculate the percentage overlap of each polygon in the input geodataframe with the current overlay polygon
         temp_intersect["overlap_pct"] = temp_intersect["intersect_area"] / temp_intersect["area"]
-        # Calculate the weighted sum
-        columns = columns_to_sum
+        # Calculate the weighted value for each column
         for column in columns:
-            temp_intersect[column] = (temp_intersect[column] * temp_intersect["overlap_pct"]).round(0)
+            temp_intersect[column] = temp_intersect[column] * temp_intersect["overlap_pct"]
         # Keep only the relevant columns in the temp_intersect dataframe
-        temp_intersect = temp_intersect[[key_to_group_by] + columns + ['intersect_area', 'overlap_pct']]
-        # Group the results
-        temp_result = temp_intersect.groupby(key_to_group_by).sum(numeric_only=True).reset_index()
+        temp_intersect = temp_intersect[[key] + columns + ['intersect_area', 'overlap_pct']]
+        # Group the results and calculate the maximum of weighted values
+        temp_result = temp_intersect.groupby(key)[columns].max().reset_index()
         # Append the results to the result gdf
         result_gdf = pd.concat([result_gdf, temp_result], ignore_index=True)
 
     # Merge the result with the overlay geodataframe
-    result_gdf = overlay.merge(result_gdf, on=key_to_group_by)
+    result_gdf = input_shapefile.merge(result_gdf, on=key)
 
     # Remove the added area column from input geodataframe
-    input = input.drop("area", axis=1)
+    input_summary_features = input.drop("area", axis=1)
 
     return result_gdf
