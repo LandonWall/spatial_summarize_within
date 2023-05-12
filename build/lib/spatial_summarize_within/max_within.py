@@ -22,10 +22,10 @@ def max_within(input_shapefile, input_summary_features, columns, key):
     for index, row in input_shapefile.iterrows():
         # Create a temporary geodataframe with just the current overlay polygon
         temp_overlay = gpd.GeoDataFrame([row], columns=input_shapefile.columns)
-        # set crs
-        temp_overlay = temp_overlay.set_crs("EPSG:3395")
+        # Set the CRS of temp_overlay to match input_summary_features
+        temp_overlay.set_crs(input_summary_features.crs, inplace=True)
         # Intersect the input geodataframe with the current overlay polygon
-        temp_intersect = gpd.overlay(input, temp_overlay, how='intersection')
+        temp_intersect = gpd.overlay(input_summary_features, temp_overlay, how='intersection')
         # Calculate the area of each polygon in intersect dataframe
         temp_intersect["intersect_area"] = temp_intersect.area
         # Calculate the percentage overlap of each polygon in the input geodataframe with the current overlay polygon
@@ -44,6 +44,6 @@ def max_within(input_shapefile, input_summary_features, columns, key):
     result_gdf = input_shapefile.merge(result_gdf, on=key)
 
     # Remove the added area column from input geodataframe
-    input_summary_features = input.drop("area", axis=1)
+    input_summary_features = input_summary_features.drop("area", axis=1)
 
     return result_gdf
