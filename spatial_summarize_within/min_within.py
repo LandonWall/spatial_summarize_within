@@ -22,8 +22,6 @@ def min_within(input_shapefile, input_summary_features, columns, key):
     for index, row in input_shapefile.iterrows():
         # Create a temporary geodataframe with just the current overlay polygon
         temp_overlay = gpd.GeoDataFrame([row], columns=input_shapefile.columns)
-        # set crs
-        temp_overlay = temp_overlay.set_crs("EPSG:3395")
         # Intersect the input geodataframe with the current overlay polygon
         temp_intersect = gpd.overlay(input, temp_overlay, how='intersection')
         # Calculate the area of each polygon in intersect dataframe
