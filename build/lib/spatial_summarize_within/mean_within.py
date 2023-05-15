@@ -33,13 +33,16 @@ def mean_within(input_shapefile, input_summary_features, columns, key):
         # Calculate the weighted mean
         columns = columns
         for column in columns:
-            temp_intersect[column] = (temp_intersect[column] * temp_intersect["overlap_pct"]).round(0)
+            temp_intersect[column] = temp_intersect[column] * temp_intersect["intersect_area"]
         # Keep only the relevant columns in the temp_intersect dataframe
         temp_intersect = temp_intersect[[key] + columns + ['intersect_area', 'overlap_pct']]
-        # Group the results and calculate the mean
-        temp_result = temp_intersect.groupby(key).mean(numeric_only=True).reset_index()
+        # Group the results by key and calculate the sum of each group
+        temp_sum = temp_intersect.groupby(key).sum(numeric_only=True).reset_index()
+        # Calculate the mean by dividing the sum by the total intersect area
+        for column in columns:
+            temp_sum[column] = temp_sum[column] / temp_sum['intersect_area']
         # Append the results to the result gdf
-        result_gdf = pd.concat([result_gdf, temp_result], ignore_index=True)
+        result_gdf = pd.concat([result_gdf, temp_sum], ignore_index=True)
 
     # Merge the result with the overlay geodataframe
     result_gdf = input_shapefile.merge(result_gdf, on=key)
