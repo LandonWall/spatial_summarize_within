@@ -22,8 +22,6 @@ import spatial_summarize_within as sw
 ```
 ## Functions
 
-
-
 ### sum_within
 the `sum_within` function calculates the area of intersection between each polygon in the input shapefile and the summary features, computes the percentage overlap, calculates a weighted sum for specified columns based on the overlap, and finally merges the results back into the original shapefile, returning a geodataframe with the summary statistics.
 
@@ -107,6 +105,15 @@ min_result = sw.min_within(
 
 # Examples
 Suppose we have a shapefile of census tracts with population data (population, male_population, female_population) and a shapefile of zip code boundaries. We want to calculate summary statistics within each zip code relative to the overlap of census tracts on the zip code bounadries.
+
+The figure and table below explain the statistical calculations of an area layer within a hypothetical boundary. The populations were used to calculate the statistics (Sum, Minimum, Maximum, and mean) for the layer. The statistics are calculated using only the proportion of the area that is within the boundary.
+
+<img src="https://github.com/LandonWall/spatial_summarize_within/assets/45885744/60f56e66-9d6d-4ae9-acff-d7ec9ad0e188" width="800" height="500">
+
+
+<img src="https://github.com/LandonWall/spatial_summarize_within/assets/45885744/2bab81d8-0e2e-4791-a3d3-065d6d33f188" width="650" height="550">
+
+## Code Implementation: 
 
 ```
 import spatial_summarize_within as sw
