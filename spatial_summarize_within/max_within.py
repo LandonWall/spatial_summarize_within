@@ -9,10 +9,10 @@ import mapclassify
 
 # Function
 def max_within(input_shapefile, input_summary_features, columns, key):
-    # Read input and overlay shapefiles
-    input_shapefile = input_shapefile
-    input_summary_features = input_summary_features
-
+    # Check if key exists in both dataframes
+    if key in input_shapefile.columns and key in input_summary_features.columns:
+        # Append suffix to key in input_summary_features
+        input_summary_features = input_summary_features.rename(columns={key: key+"_summary"})
     # Add area column to input geodataframe
     input_summary_features["area"] = input_summary_features.geometry.area
     # Create an empty geodataframe to store the results
