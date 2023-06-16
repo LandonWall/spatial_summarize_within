@@ -1,5 +1,7 @@
 # Spatial Summarize Within
 Spatial Summarize Within is a Python package that simplifies the process of summarizing attribute data within overlapping geometries in shapefiles. Given two shapefiles, it calculates the weighted values of specified attributes based on the overlap percentages between the input shapefile and the overlay shapefile. The statistics are calculated using only the proportion of the area that is within the boundary.
+## Usage
+Full [Tutorial](https://github.com/LandonWall/summarize_within_example/blob/master/notebooks/Summarize%20Precinct%20Data%20Within%20Cities.ipynb)
 
 ## Installation
 
