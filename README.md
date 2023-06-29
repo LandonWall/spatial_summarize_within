@@ -25,14 +25,39 @@ Spatial Summarize Within has the following dependencies, which will be installed
 * `shapely`
 * `mapclassifier`
 
-## Usage
-To use Spatial Summarize Within you'll first need to import the summarize_within function:
-```
-import spatial_summarize_within as sw
-```
+
+
+## Detailed Usage
+
+***sw.sum_within(input_shapefile= _None_ , input_summary_features= _None_ , columns= _None_ , key= _None_ ,join_type=_'inner'_ )***
+
+### Parameters:
+&nbsp;&nbsp;**input_shapefile:** _str, Path to the input shapefile._
+
+&nbsp;&nbsp;**input_summary_features:** _str, Path to the shapefile with features to summarize._
+
+&nbsp;&nbsp;**columns:** _list-like or scalar, optional, default None_
+
+&nbsp;&nbsp;&nbsp;&nbsp;Column or columns containing numeric or integer data to calculate summary statistics from. If none are specified, all numeric columns are used.
+
+&nbsp;&nbsp;**key:** _column, grouper, array, or list of the previous_
+
+&nbsp;&nbsp;&nbsp;&nbsp;If an array is passed, it must be the same length as the data. The list can contain any of the other types (except list). Keys to group by on the resulting GeoDataFrame index.
+
+&nbsp;&nbsp;**join_type:** _str, default 'inner'_
+&nbsp;&nbsp;&nbsp;&nbsp;Determines the type of join to perform:  
+&nbsp;&nbsp;&nbsp;&nbsp;- 'left': Use keys from left frame only  
+&nbsp;&nbsp;&nbsp;&nbsp;- 'right': Use keys from right frame only  
+&nbsp;&nbsp;&nbsp;&nbsp;- 'outer': Use union of keys from both frames  
+&nbsp;&nbsp;&nbsp;&nbsp;- 'inner': Use intersection of keys from both frames
+
+&nbsp;&nbsp;**Returns:** Geodataframe
+
+
+
 ## Functions
 
-### sum_within
+#### sum_within
 the `sum_within` function calculates the area of intersection between each polygon in the input shapefile and the summary features, computes the percentage overlap, calculates a weighted sum for specified columns based on the overlap, and finally merges the results back into the original shapefile, returning a geodataframe with the summary statistics.
 
 ```
@@ -50,7 +75,7 @@ sum_result = sw.sum_within(
 )
 ```
 
-### mean_within
+#### mean_within
 The `mean_within` function calculates the intersection area between each polygon in the input shapefile and the summary features, computes the percentage overlap, and then calculates a weighted mean for specified columns based on the intersected area. The function then groups the results by a specified key, calculates the mean by dividing the sum by the total intersected area, and merges these results back into the original shapefile, returning a geodataframe with these mean statistics.
 ```
 mean_result = sw.mean_within(
@@ -67,7 +92,7 @@ mean_result = sw.mean_within(
 )
 ```
 
-### max_within
+#### max_within
 The `max_within` function computes the intersection area between each polygon in the input shapefile and the summary features, and calculates the percentage overlap. It then determines a weighted value for specified columns based on this overlap. The function groups the results by a given key and identifies the maximum of these weighted values. These results are then merged back into the original shapefile, producing a geodataframe with these maximum statistics.
 
 ```
@@ -85,7 +110,7 @@ max_result = sw.max_within(
 )
 ```
 
-### min_within
+#### min_within
 The `min_within` function computes the intersection area between each polygon in the input shapefile and the summary features, and calculates the percentage overlap. It then determines a weighted value for specified columns based on this overlap. The function groups the results by a given key and identifies the minimum of these weighted values. These results are then merged back into the original shapefile, producing a geodataframe with these minimum statistics.
 
 ```
