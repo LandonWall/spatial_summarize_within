@@ -133,7 +133,7 @@ Suppose we have a shapefile of census tracts with population data (population, m
 
 The figure and table below explain the statistical calculations of an area layer within a hypothetical boundary. The populations were used to calculate the statistics (Sum, Minimum, Maximum, and mean) for the layer. The statistics are calculated using only the proportion of the area that is within the boundary.
 
-<img src="https://github.com/LandonWall/spatial_summarize_within/assets/45885744/60f56e66-9d6d-4ae9-acff-d7ec9ad0e188" width="800" height="500">
+<img width="717" alt="Screenshot 2023-07-01 at 10 08 13 PM" src="https://github.com/LandonWall/spatial_summarize_within/assets/45885744/895e9015-131d-46c7-923e-8f25954c764d">
 
 
 <img src="https://github.com/LandonWall/spatial_summarize_within/assets/45885744/2bab81d8-0e2e-4791-a3d3-065d6d33f188" width="650" height="550">
