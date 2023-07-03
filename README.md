@@ -4,9 +4,9 @@ Spatial Summarize Within is a Python package that simplifies the process of summ
 ## Table of Contents
 
 ## Use Cases
-### Example 1: 
+### Example 1: Legislative Redistricting
 
-### Example 2: 
+### Example 2: Overlaying Election Results on to Novel Geometries
 
 
 Full [Tutorial](https://github.com/LandonWall/summarize_within_example/blob/master/notebooks/Summarize%20Precinct%20Data%20Within%20Cities.ipynb)
