@@ -5,7 +5,7 @@ Spatial Summarize Within is a Python package that simplifies the process of summ
 
 ## Use Cases
 ### Example 1: Legislative Redistricting
-**The Problem:**
+**The Problem:** During the process of redistricting, existing boundaries of legislative districts are redrawn based on new census data. Spatial Summarize Within can help overlay historical election data from precincts onto the newly defined districts, allowing for increased context on how the district's partisan nature is changing.
 
 ### Example 2: Overlaying Election Results on to Novel Geometries
 **The Problem:**
