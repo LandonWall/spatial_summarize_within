@@ -20,13 +20,25 @@ Spatial Summarize Within is a Python package that simplifies the process of summ
 
 ![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/38cf13ee-3483-4810-81fe-119ab79e9595)
 
+**Import Legislative District Shapefiles**
+```python
+# Old Legislative Districts
+old_LD_sf = gpd.read_file("../data/spatial/AZ_LD_2018/tl_2018_04_sldu.shp")
+old_LD_sf = old_LD_sf.to_crs("EPSG:3857")
+
+# New Legislative Districts
+new_LD_sf = gpd.read_file("../data/spatial/AZ_LD_2022/Approved_Official_Legislative_Map.shp")
+new_LD_sf = new_LD_sf.to_crs("EPSG:3857")
+```
+
+**Import Precinct Shapefile**
 ```python
 precinct_sf = gpd.read_file("../data/spatial/precincts_2018/az_vtd_2018_new_pima.shp")
 precinct_sf = precinct_sf.to_crs("EPSG:3857")
 ```
+**Import Flat Election Results**
 ```python
 results_2020 = pd.read_table(../data/raw/results_2020.csv, sep=",")
-
 results_2020.head()
 ```
 | PRECINCT  | BIDEN | JORGENSEN | TRUMP | TOTAL_VOTES |
