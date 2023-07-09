@@ -9,6 +9,23 @@ Spatial Summarize Within is a Python package that simplifies the process of summ
 
 ![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/38cf13ee-3483-4810-81fe-119ab79e9595)
 
+```
+precinct_sf = gpd.read_file("../data/spatial/precincts_2018/az_vtd_2018_new_pima.shp")
+precinct_sf = precinct_sf.to_crs("EPSG:3857")
+```
+```
+results_2020 = pd.read_table(../data/raw/results_2020.csv, sep=",")
+
+results_2020.head()
+```
+| PRECINCT  | BIDEN | JORGENSEN | TRUMP | TOTAL_VOTES |
+|-----------|-------|-----------|-------|-------------|
+| MC_ACACIA | 1770  | 61        | 1475  | 3306        |
+| MC_ACOMA  | 1029  | 45        | 1788  | 2862        |
+| MC_ACUNA  | 1655  | 13        | 328   | 1996        |
+| MC_ADOBE  | 875   | 44        | 1192  | 2111        |
+| MC_ADORA  | 2853  | 91        | 4067  | 7011        |
+
 
 ### Example 2: Overlaying Election Results on to Novel Geometries
 **The Problem:**
