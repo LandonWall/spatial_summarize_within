@@ -9,11 +9,11 @@ Spatial Summarize Within is a Python package that simplifies the process of summ
 
 ![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/38cf13ee-3483-4810-81fe-119ab79e9595)
 
-```
+```python
 precinct_sf = gpd.read_file("../data/spatial/precincts_2018/az_vtd_2018_new_pima.shp")
 precinct_sf = precinct_sf.to_crs("EPSG:3857")
 ```
-```
+```python
 results_2020 = pd.read_table(../data/raw/results_2020.csv, sep=",")
 
 results_2020.head()
@@ -82,7 +82,7 @@ Spatial Summarize Within has the following dependencies, which will be installed
 #### sum_within
 the `sum_within` function calculates the area of intersection between each polygon in the input shapefile and the summary features, computes the percentage overlap, calculates a weighted sum for specified columns based on the overlap, and finally merges the results back into the original shapefile, returning a geodataframe with the summary statistics.
 
-```
+```python
 sum_result = sw.sum_within(
     input_shapefile=input_shapefile,
     input_summary_features=overlay_shapefile,
@@ -99,7 +99,7 @@ sum_result = sw.sum_within(
 
 #### mean_within
 The `mean_within` function calculates the intersection area between each polygon in the input shapefile and the summary features, computes the percentage overlap, and then calculates a weighted mean for specified columns based on the intersected area. The function then groups the results by a specified key, calculates the mean by dividing the sum by the total intersected area, and merges these results back into the original shapefile, returning a geodataframe with these mean statistics.
-```
+```python
 mean_result = sw.mean_within(
     input_shapefile=input_shapefile,
     input_summary_features=overlay_shapefile,
@@ -117,7 +117,7 @@ mean_result = sw.mean_within(
 #### max_within
 The `max_within` function computes the intersection area between each polygon in the input shapefile and the summary features, and calculates the percentage overlap. It then determines a weighted value for specified columns based on this overlap. The function groups the results by a given key and identifies the maximum of these weighted values. These results are then merged back into the original shapefile, producing a geodataframe with these maximum statistics.
 
-```
+```python
 max_result = sw.max_within(
     input_shapefile=input_shapefile,
     input_summary_features=overlay_shapefile,
@@ -135,7 +135,7 @@ max_result = sw.max_within(
 #### min_within
 The `min_within` function computes the intersection area between each polygon in the input shapefile and the summary features, and calculates the percentage overlap. It then determines a weighted value for specified columns based on this overlap. The function groups the results by a given key and identifies the minimum of these weighted values. These results are then merged back into the original shapefile, producing a geodataframe with these minimum statistics.
 
-```
+```python
 min_result = sw.min_within(
     input_shapefile=input_shapefile,
     input_summary_features=overlay_shapefile,
