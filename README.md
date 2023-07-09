@@ -2,10 +2,10 @@
 Spatial Summarize Within is a Python package that simplifies the process of summarizing attribute data within overlapping geometries in shapefiles. Given two shapefiles, it calculates the weighted values of specified attributes based on the overlap percentages between the input shapefile and the overlay shapefile. The statistics are calculated using only the proportion of the area that is within the boundary.
 
 ## Table of Contents
+- [Installation](#installation)
 - [Use Cases](#use-cases)
   - [Example 1: Legislative Redistricting](#example-1-legislative-redistricting)
   - [Example 2: Overlaying Election Results on to Novel Geometries](#example-2-overlaying-election-results-on-to-novel-geometries)
-- [Installation](#installation)
 - [Detailed Usage](#detailed-usage)
 - [Functions](#functions)
   - [sum_within](#sum_within)
@@ -14,11 +14,30 @@ Spatial Summarize Within is a Python package that simplifies the process of summ
   - [min_within](#min_within)
 - [How Summarize Within works](#how-summarize-within-works)
 
+## Installation
+
+You can install Spatial Summarize Within using pip:
+
+```bash
+pip install spatial_summarize_within
+```
+Spatial Summarize Within has the following dependencies, which will be installed automatically:
+
+* `geopandas`
+* `pandas`
+* `shapely`
+* `mapclassifier`
+
 ## Use Cases
 ### Example 1: Legislative Redistricting
 **The Problem:** During the process of redistricting, existing boundaries of legislative districts are redrawn based on new census data. Spatial Summarize Within can help overlay historical election data from precincts onto the newly defined districts, allowing for increased context on how the district's partisan nature is changing.
 
 ![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/38cf13ee-3483-4810-81fe-119ab79e9595)
+
+**Import Spatial_Summarize_Within Package**
+```python
+import spatial_summarize_within as sw
+```
 
 **Import Legislative District Shapefiles**
 ```python
@@ -55,22 +74,6 @@ results_2020.head()
 
 
 Full [Tutorial](https://github.com/LandonWall/summarize_within_example/blob/master/notebooks/Summarize%20Precinct%20Data%20Within%20Cities.ipynb)
-
-## Installation
-
-You can install Spatial Summarize Within using pip:
-
-```bash
-pip install spatial_summarize_within
-```
-Spatial Summarize Within has the following dependencies, which will be installed automatically:
-
-* `geopandas`
-* `pandas`
-* `shapely`
-* `mapclassifier`
-
-
 
 ## Detailed Usage
 
