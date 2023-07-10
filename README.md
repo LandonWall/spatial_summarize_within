@@ -70,6 +70,13 @@ results_2020.head()
 | MC_ADOBE  | 875   | 44        | 1192  | 2111        |
 | MC_ADORA  | 2853  | 91        | 4067  | 7011        |
 
+**Merge Results with Precinct Shapefile**
+
+**Summarize Results by Old Legislative District**
+
+**Summarize Results by New Legislative District**
+
+
 
 ### Example 2: Overlaying Election Results on to Novel Geometries
 **The Problem:**
