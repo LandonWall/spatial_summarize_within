@@ -16,7 +16,7 @@ def min_within(input_shapefile, input_summary_features, columns, key, join_type=
     # Add area column to input geodataframe
     input_summary_features["area"] = input_summary_features.geometry.area
     # Intersect the input geodataframe with the entire overlay shapefile
-    intersected = gpd.overlay(input_summary_features, input_shapefile, how='intersection')
+    intersected = gpd.overlay(input_summary_features, input_shapefile, how='intersection', keep_geom_type=False)
     # Calculate the area of each polygon in intersect dataframe
     intersected["intersect_area"] = intersected.area
     # Calculate the percentage overlap of each polygon
