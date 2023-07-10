@@ -32,6 +32,8 @@ Spatial Summarize Within has the following dependencies, which will be installed
 ### Example 1: Legislative Redistricting
 **The Problem:** During the process of redistricting, existing boundaries of legislative districts are redrawn based on new census data. Spatial Summarize Within can help overlay historical election data from precincts onto the newly defined districts, allowing for increased context on how the district's partisan nature is changing.
 
+For this example, lets calculate the results of the 2020 Presidential Election in the new Legislative Districts, and see how the results compare to the old districts. We will do this by using the spatial_summarize_within package to aggergate the Presidential results from a precinct level to the district level.
+
 ![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/38cf13ee-3483-4810-81fe-119ab79e9595)
 
 **Import Spatial_Summarize_Within Package**
