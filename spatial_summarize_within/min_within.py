@@ -13,7 +13,17 @@ def min_within(input_shapefile, input_summary_features, columns, key, join_type=
     if key in input_shapefile.columns and key in input_summary_features.columns:
         # Append suffix to key in input_summary_features
         input_summary_features = input_summary_features.rename(columns={key: key+"_summary"})
-    # Add area column to input geodataframe
+
+    # set same CRS
+    if input_summary_features.crs != input_shapefile.crs:
+        input_summary_features = input_summary_features.to_crs(input_shapefile.crs)
+
+    # set equal area projection
+    equal_area_crs = 'EPSG:6933'
+    input_summary_features = input_summary_features.to_crs(equal_area_crs)
+    input_shapefile = input_shapefile.to_crs(equal_area_crs)
+
+    # Add area column to input
     input_summary_features["area"] = input_summary_features.geometry.area
     # Intersect the input geodataframe with the entire overlay shapefile
     intersected = gpd.overlay(input_summary_features, input_shapefile, how='intersection', keep_geom_type=False)
@@ -40,6 +50,9 @@ def min_within(input_shapefile, input_summary_features, columns, key, join_type=
 
     # Merge the result with the overlay geodataframe
     result_gdf = input_shapefile.merge(result_gdf, on=key, how=join_type)
+
+    # Round relevant columns to 2 decimal places
+    result_gdf[columns + ['intersect_area', 'overlap_pct']] = result_gdf[columns + ['intersect_area', 'overlap_pct']].round(2)
 
     # Remove the area column from input geodataframe
     input_summary_features = input_summary_features.drop("area", axis=1)
