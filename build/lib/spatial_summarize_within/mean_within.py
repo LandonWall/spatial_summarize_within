@@ -5,7 +5,6 @@ from shapely import wkt
 import shapely.ops
 from shapely.geometry import Polygon, MultiPolygon, shape, Point
 import geopandas as gpd
-import mapclassify
 
 # Function
 def mean_within(input_shapefile, input_summary_features, columns, key, join_type='inner'):
@@ -42,7 +41,7 @@ def mean_within(input_shapefile, input_summary_features, columns, key, join_type
         for column in columns:
             temp_intersect[column] = (temp_intersect[column] * temp_intersect["intersect_area"]).sum() / temp_intersect["intersect_area"].sum()
         # Keep only the relevant columns in the temp_intersect dataframe
-        temp_intersect = temp_intersect[[key] + columns + ['intersect_area', 'overlap_pct']]
+        temp_intersect = temp_intersect[[key] + columns]
         # Group the results
         temp_result = temp_intersect.groupby(key).mean(numeric_only=True).reset_index()
         # Append the results to the result gdf
@@ -52,7 +51,7 @@ def mean_within(input_shapefile, input_summary_features, columns, key, join_type
     result_gdf = input_shapefile.merge(result_gdf, on=key, how=join_type)
 
     # Round relevant columns to 2 decimal places
-    result_gdf[columns + ['intersect_area', 'overlap_pct']] = result_gdf[columns + ['intersect_area', 'overlap_pct']].round(2)
+    result_gdf[columns] = result_gdf[columns].round(2)
 
     # Remove the area column from input geodataframe
     input_summary_features = input_summary_features.drop("area", axis=1)

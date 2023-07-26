@@ -5,7 +5,6 @@ from shapely import wkt
 import shapely.ops
 from shapely.geometry import Polygon, MultiPolygon, shape, Point
 import geopandas as gpd
-import mapclassify
 
 # Function
 def sum_within(input_shapefile, input_summary_features, columns, key, join_type='inner'):
@@ -52,9 +51,12 @@ def sum_within(input_shapefile, input_summary_features, columns, key, join_type=
     result_gdf = input_shapefile.merge(result_gdf, on=key, how=join_type)
 
     # Round relevant columns to 2 decimal places
-    result_gdf[columns + ['intersect_area', 'overlap_pct']] = result_gdf[columns + ['intersect_area', 'overlap_pct']].round(2)
+    result_gdf[columns] = result_gdf[columns].round(2)
 
     # Remove the area column from input geodataframe
     input_summary_features = input_summary_features.drop("area", axis=1)
+
+    # Drop 'intersect_area', 'overlap_pct' columns
+    result_gdf = result_gdf.drop(['intersect_area', 'overlap_pct'], axis=1)
 
     return result_gdf
