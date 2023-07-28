@@ -1,5 +1,5 @@
 # Spatial Summarize Within
-Spatial Summarize Within is a Python package that simplifies the process of summarizing attribute data within overlapping geometries in shapefiles. Given two shapefiles, it calculates the weighted values of specified attributes based on the overlap percentages between the input shapefile and the overlay shapefile. The statistics are calculated using only the proportion of the area that is within the boundary.
+Spatial Summarize Within is a Python package designed to simplify the process of summarizing attribute data within overlapping geometries in shapefiles. Given two shapefiles, it calculates the weighted values of specified attributes based on the overlap percentages between the input shapefile and the overlay shapefile. The statistics are calculated using only the proportion of the area that is within the boundary. Importantly, the package ensures spatial accuracy by automatically detecting and converting Coordinate Reference Systems (CRS). Before carrying out calculations, it converts the shapefiles to an Equal Area CRS for accurate area computations, even across large geographic extents. This internal conversion guarantees precision, regardless of the size of your spatial data.
 
 # Table of Contents
 - [Installation](#installation)
@@ -98,6 +98,8 @@ sum_old_ld.head()
 | 4 | 42,368| 1,233     | 32,428 | 76,029     |
 | 5 | 26,758| 1,389     | 83,525 | 111,672    |
 
+<br>
+
 **Summarize Results by New Legislative District**
 ```python
 sum_new_ld = sw.sum_within(
@@ -126,6 +128,8 @@ sum_new_ld.head()
 | 4        | 77,112 | 1,839     | 75,789  | 154,741     |
 | 5        | 76,073 | 1,733     | 32,483  | 110,289     |
 
+<br>
+
 **Compare New District Lean to Old District Lean**
 
 Now that we have summarized precinct level election results from 2020 on the old legislative districts and the new districts, we can get a better idea of how the districts are changing. 
@@ -144,13 +148,14 @@ We can see that the new legislative districts that took effect in 2022 are sligh
 | Number of Won Districts | 15            | 15            |
 | Number of Toss-up Districts | 5       | 2             |
 
-
+<br>
+<br>
 
 ## Example 2: Overlaying Election Results on to Novel Geometries
 **The Problem:**
 
-
-Full [Tutorial](https://github.com/LandonWall/summarize_within_example/blob/master/notebooks/Summarize%20Precinct%20Data%20Within%20Cities.ipynb)
+<br>
+<br>
 
 # Detailed Usage
 
@@ -178,7 +183,22 @@ Full [Tutorial](https://github.com/LandonWall/summarize_within_example/blob/mast
 
 &nbsp;&nbsp;**Returns:** Geodataframe
 
+## Coordinate Reference System (CRS) Handling:
+Spatial Summarize Within takes into account the importance of spatial reference for geospatial data. It performs operations considering the Coordinate Reference System (CRS) of the input shapefiles and ensures accuracy in calculations.
 
+**CRS Detection and Conversion**
+
+The package automatically detects the CRS of the input shapefiles. If the two input shapefiles have different CRS, the package converts the CRS of the overlay shapefile to match the CRS of the input shapefile. This is crucial to ensure that the spatial operations are performed in a consistent spatial reference system.
+
+Please note, it is always recommended to use shapefiles that are in a projected coordinate system (rather than a geographic coordinate system) for accurate area calculations. If your input shapefiles are in a geographic coordinate system (like WGS84, EPSG:4326), you might want to reproject them to a suitable projected coordinate system before using them with this package.
+
+**Conversion to Equal Area CRS**
+
+Before performing area calculations and other spatial operations, Spatial Summarize Within internally converts the input shapefiles to an Equal Area CRS. This step ensures that the calculations are accurate, even when dealing with large spatial extents that span multiple degrees of latitude and/or longitude. The conversion to an Equal Area CRS is done behind the scenes and does not modify the original input shapefiles. The results are converted back to the original CRS before being returned by the functions.
+
+This internal conversion to Equal Area CRS is especially important when the input shapefiles cover large geographic extents. For smaller areas, the distortions introduced by non-equal area CRS might not significantly impact the results, but for larger areas, this step ensures that the spatial summaries are as accurate as possible.
+
+<br>
 
 # Functions
 
