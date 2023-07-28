@@ -184,7 +184,6 @@ We can see that the new legislative districts that took effect in 2022 are sligh
 &nbsp;&nbsp;**Returns:** Geodataframe
 
 ## Coordinate Reference System (CRS) Handling:
-Spatial Summarize Within takes into account the importance of spatial reference for geospatial data. It performs operations considering the Coordinate Reference System (CRS) of the input shapefiles and ensures accuracy in calculations.
 
 **CRS Detection and Conversion**
 
