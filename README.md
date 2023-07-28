@@ -1,7 +1,7 @@
 # Spatial Summarize Within
 Spatial Summarize Within is a Python package that simplifies the process of summarizing attribute data within overlapping geometries in shapefiles. Given two shapefiles, it calculates the weighted values of specified attributes based on the overlap percentages between the input shapefile and the overlay shapefile. The statistics are calculated using only the proportion of the area that is within the boundary.
 
-## Table of Contents
+# Table of Contents
 - [Installation](#installation)
 - [Use Cases](#use-cases)
   - [Example 1: Legislative Redistricting](#example-1-legislative-redistricting)
@@ -14,7 +14,7 @@ Spatial Summarize Within is a Python package that simplifies the process of summ
   - [min_within](#min_within)
 - [How Summarize Within works](#how-summarize-within-works)
 
-## Installation
+# Installation
 
 You can install Spatial Summarize Within using pip:
 
@@ -26,10 +26,9 @@ Spatial Summarize Within has the following dependencies, which will be installed
 * `geopandas`
 * `pandas`
 * `shapely`
-* `mapclassifier`
 
-## Use Cases
-### Example 1: Legislative Redistricting
+# Use Cases
+## Example 1: Legislative Redistricting
 **The Problem:** During the process of redistricting, existing boundaries of legislative districts are redrawn based on new census data. Spatial Summarize Within can help overlay historical election data from precincts onto the newly defined districts, allowing for increased context on how the district's partisan nature is changing.
 
 For this example, lets calculate the results of the 2020 Presidential Election in the new Legislative Districts, and see how the results compare to the old districts. We will do this by using the spatial_summarize_within package to aggergate the Presidential results from a precinct level to the district level.
@@ -45,17 +44,14 @@ import spatial_summarize_within as sw
 ```python
 # Old Legislative Districts
 old_LD_sf = gpd.read_file("../data/spatial/AZ_LD_2018/tl_2018_04_sldu.shp")
-old_LD_sf = old_LD_sf.to_crs("EPSG:3857")
 
 # New Legislative Districts
 new_LD_sf = gpd.read_file("../data/spatial/AZ_LD_2022/Approved_Official_Legislative_Map.shp")
-new_LD_sf = new_LD_sf.to_crs("EPSG:3857")
 ```
 
 **Import Precinct Shapefile**
 ```python
 precinct_sf = gpd.read_file("../data/spatial/precincts_2018/az_vtd_2018_new_pima.shp")
-precinct_sf = precinct_sf.to_crs("EPSG:3857")
 ```
 **Import Flat Election Results**
 ```python
@@ -71,24 +67,96 @@ results_2020.head()
 | MC_ADORA  | 2853  | 91        | 4067  | 7011        |
 
 **Merge Results with Precinct Shapefile**
-
+```python
+precinct_sf = precinct_sf.merge(results_2020, on = "PRECINCT")
+```
 **Summarize Results by Old Legislative District**
+```python
+sum_old_ld = sw.sum_within(
+    input_shapefile=old_LD_sf,
+    input_summary_features=precinct_sf,
+    columns=[
+        "2020_PRESIDENT_REP",
+        "2020_PRESIDENT_DEM",
+        "2020_PRESIDENT_OTHER",
+        "2020_PRESIDENT_TOTAL",
+    ],
+    key="DISTRICT",
+    join_type='left'
+)
+```
+
+```python
+sum_old_ld.head()
+```
+
+| DISTRICT                | BIDEN | JORGENSEN | TRUMP | TOTAL_VOTES |
+|-------------------------|-------|-----------|-------|-------------|
+| 1 | 48,541| 2,061     | 102,121| 152,723    |
+| 2 | 53,679| 1,174     | 33,989 | 88,843     |
+| 3 | 59,147| 1,138     | 21,416 | 81,701     |
+| 4 | 42,368| 1,233     | 32,428 | 76,029     |
+| 5 | 26,758| 1,389     | 83,525 | 111,672    |
 
 **Summarize Results by New Legislative District**
+```python
+sum_new_ld = sw.sum_within(
+    input_shapefile=new_LD_sf,
+    input_summary_features=precinct_sf,
+    columns=[
+        "2020_PRESIDENT_REP",
+        "2020_PRESIDENT_DEM",
+        "2020_PRESIDENT_OTHER",
+        "2020_PRESIDENT_TOTAL",
+    ],
+    key="DISTRICT",
+    join_type='left'
+)
+```
+
+```python
+sum_new_ld.head()
+```
+
+| DISTRICT | BIDEN  | JORGENSEN | TRUMP   | TOTAL_VOTES |
+|----------|--------|-----------|---------|-------------|
+| 1        | 49,773 | 2,095     | 91,634  | 143,501     |
+| 2        | 52,539 | 1,965     | 54,397  | 108,901     |
+| 3        | 62,934 | 1,480     | 96,610  | 161,024     |
+| 4        | 77,112 | 1,839     | 75,789  | 154,741     |
+| 5        | 76,073 | 1,733     | 32,483  | 110,289     |
+
+**Compare New District Lean to Old District Lean**
+
+Now that we have summarized precinct level election results from 2020 on the old legislative districts and the new districts, we can get a better idea of how the districts are changing. 
+
+![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/f2e3d2cb-ac91-4c06-a930-ff9dcb4626ce)
+
+We can see that the new legislative districts that took effect in 2022 are slightly more left-leaning as a a whole, but have 3 less toss-up districts (districts where Trump won or lost by less than 5%)
+
+|                         | Old Districts | New Districts |
+|-------------------------|---------------|---------------|
+| Median Margin           | 0.4%         | -1.7%        |
+| Average Margin          | -3.7%        | -5.0%        |
+| Standard Deviation      | 27.3%        | 27.0%        |
+| Minimum Margin          | -51.7%       | -51.5%       |
+| Maximum Margin          | 50.7%        | 50.8%        |
+| Number of Won Districts | 15            | 15            |
+| Number of Toss-up Districts | 5       | 2             |
 
 
 
-### Example 2: Overlaying Election Results on to Novel Geometries
+## Example 2: Overlaying Election Results on to Novel Geometries
 **The Problem:**
 
 
 Full [Tutorial](https://github.com/LandonWall/summarize_within_example/blob/master/notebooks/Summarize%20Precinct%20Data%20Within%20Cities.ipynb)
 
-## Detailed Usage
+# Detailed Usage
 
 ***sw.sum_within(input_shapefile= _None_ , input_summary_features= _None_ , columns= _None_ , key= _None_ ,join_type=_'inner'_ )***
 
-### Parameters:
+## Parameters:
 &nbsp;&nbsp;**input_shapefile:** _str, Path to the input shapefile._
 
 &nbsp;&nbsp;**input_summary_features:** _str, Path to the shapefile with features to summarize._
@@ -112,9 +180,9 @@ Full [Tutorial](https://github.com/LandonWall/summarize_within_example/blob/mast
 
 
 
-## Functions
+# Functions
 
-#### sum_within
+### sum_within
 the `sum_within` function calculates the area of intersection between each polygon in the input shapefile and the summary features, computes the percentage overlap, calculates a weighted sum for specified columns based on the overlap, and finally merges the results back into the original shapefile, returning a geodataframe with the summary statistics.
 
 ```python
@@ -132,7 +200,7 @@ sum_result = sw.sum_within(
 )
 ```
 
-#### mean_within
+### mean_within
 The `mean_within` function calculates the intersection area between each polygon in the input shapefile and the summary features, computes the percentage overlap, and then calculates a weighted mean for specified columns based on the intersected area. The function then groups the results by a specified key, calculates the mean by dividing the sum by the total intersected area, and merges these results back into the original shapefile, returning a geodataframe with these mean statistics.
 ```python
 mean_result = sw.mean_within(
@@ -149,7 +217,7 @@ mean_result = sw.mean_within(
 )
 ```
 
-#### max_within
+### max_within
 The `max_within` function computes the intersection area between each polygon in the input shapefile and the summary features, and calculates the percentage overlap. It then determines a weighted value for specified columns based on this overlap. The function groups the results by a given key and identifies the maximum of these weighted values. These results are then merged back into the original shapefile, producing a geodataframe with these maximum statistics.
 
 ```python
@@ -167,7 +235,7 @@ max_result = sw.max_within(
 )
 ```
 
-#### min_within
+### min_within
 The `min_within` function computes the intersection area between each polygon in the input shapefile and the summary features, and calculates the percentage overlap. It then determines a weighted value for specified columns based on this overlap. The function groups the results by a given key and identifies the minimum of these weighted values. These results are then merged back into the original shapefile, producing a geodataframe with these minimum statistics.
 
 ```python
