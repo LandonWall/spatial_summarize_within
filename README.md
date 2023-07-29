@@ -153,6 +153,72 @@ We can see that the new legislative districts that took effect in 2022 are sligh
 
 ## Example 2: Overlaying Election Results on to Novel Geometries
 **The Problem:**
+test test test test test test
+
+![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/f6616dca-255c-4f7d-ad5b-2317a28ddf42)
+
+<br>
+
+**Import Spatial_Summarize_Within Package**
+```python
+import spatial_summarize_within as sw
+```
+
+**Import Virginia City Shapefiles**
+```python
+# Virginia Cities
+city_sf = gpd.read_file("../data/spatial/VA_CITIES/va_cities.shp")
+```
+
+**Import 2021 Virginia Governor Election Results**
+```python
+results_pcts_2021 = gpd.read_file("../data/spatial/2021 results shapefile/va_2021.shp")
+results_pcts_2021.head()
+```
+
+| PRECINCT       | Youngkin | McAuliffe | Other | geometry |
+|----------------|----------|-----------|-------|----------|
+| Chincoteague   | 1300     | 712       | 11    |          |
+| Atlantic       | 553      | 135       | 3     |          |
+| Greenbackville | 909      | 329       | 5     |          |
+| New Church     | 561      | 477       | 9     |          |
+| Bloxom         | 373      | 142       | 1     |          |
+
+
+**Summarize Results by City**
+```python
+results_by_city = sw.sum_within(
+    input_shapefile=city_sf,
+    input_summary_features=results_pcts_2021,
+    columns=[
+        'Youngkin', 
+        'McAuliffe',
+        'Other', 
+    ],
+    key="CITY_NAME",
+    join_type='left'
+)
+```
+
+```python
+results_by_city.head()
+```
+
+| CITY_NAME          | Youngkin | McAuliffe | Other   |
+|---------------|----------|-----------|---------|
+| Virginia Beach| 86939.22 | 73887.13  | 1257.43 |
+| Richmond      | 15675.97 | 61762.11  | 2494.58 |
+| Alexandria    | 14090.16 | 44102.62  | 452.83  |
+| Chesapeake    | 48064.67 | 42885.88  | 712.39  |
+| Norfolk       | 18892.18 | 40352.99  | 849.74  |
+
+<br>
+
+**Visualize Election Results by City**
+
+![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/bae07aba-12e2-44d3-b26e-2e1aa20dc7a5)
+
+
 
 <br>
 <br>
