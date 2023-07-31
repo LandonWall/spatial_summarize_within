@@ -29,9 +29,9 @@ Spatial Summarize Within has the following dependencies, which will be installed
 
 # Use Cases
 ## Example 1: Legislative Redistricting
-**The Problem:** During the process of redistricting, existing boundaries of legislative districts are redrawn based on new census data. Spatial Summarize Within can help overlay historical election data from precincts onto the newly defined districts, allowing for increased context on how the district's partisan nature is changing.
+**The Problem:** During the process of redistricting, existing boundaries of legislative districts are redrawn based on new census data. This poses a unique challenge in that historical precinct data often don't perfectly align with these new boundaries. Furthermore, updated precincts that align with the new districts may not be released until months after the districts are finalized.
 
-For this example, lets calculate the results of the 2020 Presidential Election in the new Legislative Districts, and see how the results compare to the old districts. We will do this by using the spatial_summarize_within package to aggergate the Presidential results from a precinct level to the district level.
+For this example, let's calculate the results of the 2020 Presidential Election in the new Legislative Districts, and see how the results compare to the old districts. We will do this by using the spatial_summarize_within package to aggregate the Presidential results from a precinct level to the district level. This will provide us with more accurate and timely insights into the partisan nature of these new districts based on historical data, even before the release of new precincts.
 
 ![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/38cf13ee-3483-4810-81fe-119ab79e9595)
 
@@ -136,7 +136,7 @@ Now that we have summarized precinct level election results from 2020 on the old
 
 ![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/f2e3d2cb-ac91-4c06-a930-ff9dcb4626ce)
 
-We can see that the new legislative districts that took effect in 2022 are slightly more left-leaning as a a whole, but have 3 less toss-up districts (districts where Trump won or lost by less than 5%)
+We can see that the new legislative districts that took effect in 2022 are less competitive than they were previously, with toss-up districts dropping from 5 to 2.
 
 |                         | Old Districts | New Districts |
 |-------------------------|---------------|---------------|
@@ -145,15 +145,27 @@ We can see that the new legislative districts that took effect in 2022 are sligh
 | Standard Deviation      | 27.3%        | 27.0%        |
 | Minimum Margin          | -51.7%       | -51.5%       |
 | Maximum Margin          | 50.7%        | 50.8%        |
-| Number of Won Districts | 15            | 15            |
-| Number of Toss-up Districts | 5       | 2             |
+
+
+|                       | Old Districts | New Districts |
+|-----------------------|---------------|---------------|
+| Safe Republican       | 10            | 9             |
+| Likely Republican     | 1             | 1             |
+| Lean Republican       | 1             | 4             |
+| Toss-Up               | 5             | 2             |
+| Lean Democrat         | 1             | 0             |
+| Likely Democrat       | 1             | 2             |
+| Safe Democrat         | 11            | 12            |
+
 
 <br>
 <br>
 
 ## Example 2: Overlaying Election Results on to Novel Geometries
 **The Problem:**
-test test test test test test
+Election results are typically broken down by precinct and county, but often other geographies are more useful to contextuilize results. For example, understanding election results within the boundaries of a city, town, school district, zip code, etc., can help to provide a deeper context for the results. However, obtaining this level of detail accurately can be challenging due to uneven overlapping of precincts or non-standard geographical boundaries. Spatial Summarize Within can be used to accurately overlay election results onto novel geometries, providing a clearer understanding of voting patterns within these entities.
+
+Let's illustrate this with the following example where we overlay the 2021 Virginia Governor election results onto the city boundaries within the state of Virginia.
 
 ![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/f6616dca-255c-4f7d-ad5b-2317a28ddf42)
 
@@ -215,6 +227,8 @@ results_by_city.head()
 <br>
 
 **Visualize Election Results by City**
+
+By summarizing the results of the election by city we have added context to the results and can see that unsuprisngly, voters within the proper city boundaries (which are quite small), largely voted for the Democrat. This implies that Youngkin's 2021 success largely came from suburbs and rural areas which we could prove through further analysis.
 
 ![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/bae07aba-12e2-44d3-b26e-2e1aa20dc7a5)
 
