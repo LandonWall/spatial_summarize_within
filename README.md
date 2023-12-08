@@ -6,6 +6,7 @@ Spatial Summarize Within is a Python package designed to simplify the process of
 - [Use Cases](#use-cases)
   - [Example 1: Legislative Redistricting](#example-1-legislative-redistricting)
   - [Example 2: Overlaying Election Results on to Novel Geometries](#example-2-overlaying-election-results-on-to-novel-geometries)
+  - [Example 3: Bulk Aggregation of 10 Precinct Shapefiles On To Congressional Districts](#example-3-bulk-aggregation-of-10-precinct-shapefiles-on-to-congressional-districts)
 - [Detailed Usage](#detailed-usage)
 - [Functions](#functions)
   - [sum_within](#sum_within)
@@ -231,6 +232,171 @@ results_by_city.head()
 By summarizing the results of the election by city we have added context to the results and can see that unsuprisngly, voters within the proper city boundaries (which are quite small), largely voted for the Democrat. This implies that Youngkin's 2021 success largely came from suburbs and rural areas which we could prove through further analysis.
 
 ![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/bae07aba-12e2-44d3-b26e-2e1aa20dc7a5)
+
+<br>
+<br>
+
+## Example 3: Bulk Aggregation of 10 Precinct Shapefiles On To Congressional Districts
+**The Problem:**
+Precinct-level election results are published per election and per state. When aiming to analyze multiple states at once, or one state over multiple elections, the process is traditionally extremely time-consuming and involves manually aggregating each file individually. Using spatial_summarize_within, you can accelerate this process by aggregating multiple precinct shapefiles at once in seconds.
+
+In this example, we will gather precinct-level election results from 2016 and 2020 in the five states that flipped from Republican to Democrat in the 2020 Presidential Election. We use [Harvard Dataverse](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/NH5S2I)'s data to ensure a standardized format. We will then aggregate the 2016 data and the 2020 data, and merge it into one file so we can analyze which Congressional Districts saw the biggest shifts towards Democrats from 2016 to 2020.
+
+**Import Spatial_Summarize_Within Package**
+```python
+import spatial_summarize_within as sw
+```
+
+**Import Precinct Result Shapefiles**
+```python
+# set directory
+notebook_directory = Path(os.getcwd())
+
+# filenames
+filenames = ["az_2016", "az_2020", "ga_2016", "ga_2020", 
+             "mi_2016", "mi_2020", "pa_2016", "pa_2020", "wi_2016", "wi_2020"]
+
+# set dictionary to store shapefiles
+shapefiles = {}
+
+# Loop through the filenames and load
+for filename in filenames:
+    notebook_directory = Path(".")
+    shapefile_path = notebook_directory / f"../data/spatial/{filename}/{filename}.shp"
+
+    if shapefile_path.exists():
+        # Load shp
+        df = gpd.read_file(shapefile_path)
+
+        # Convert all column names to uppercase except 'geometry'
+        df.columns = [col.upper() if col != 'geometry' else col for col in df.columns]
+
+        # Filter columns
+        if "2016" in filename:
+            # Select columns that start with "G16PRE" + "PCTNUM" and "geometry"
+            cols_to_keep = [col for col in df.columns if col.startswith("G16PRE") or col in ["PCTNUM", "geometry"]]
+            df = df[cols_to_keep]
+
+            # create total vote value for 2016
+            vote_cols = df.filter(regex='G16PRE').columns
+            df['G16PRE_TOTAL'] = df[vote_cols].sum(axis=1)
+        elif "2020" in filename:
+            # Select columns that start with "G20PRE" + "PCTNUM" and "geometry"
+            cols_to_keep = [col for col in df.columns if col.startswith("G20PRE") or col in ["PCTNUM", "geometry"]]
+            df = df[cols_to_keep]
+
+            # create total vote value for 2020
+            vote_cols = df.filter(regex='G20PRE').columns
+            df['G20PRE_TOTAL'] = df[vote_cols].sum(axis=1)
+
+        # Store filtered GeoDataFrame
+        shapefiles[filename] = df
+    else:
+        print(f"File not found: {shapefile_path}")
+
+shapefiles['az_2016'].head()
+```
+
+| PCTNUM   |   G16PRERTRU |   G16PREDCLI |   G16PRELJOH |   G16PRE_TOTAL |
+|:---------|-------------:|-------------:|-------------:|---------------:|
+| AP0002   |          216 |           60 |           13 |            295 |
+| AP0003   |          143 |         1387 |           72 |           1685 |
+| AP0005   |           93 |          678 |           38 |            862 |
+| AP0009   |         1135 |          228 |           44 |           1445 |
+| AP0011   |           47 |          589 |           26 |            694 |
+
+<br>
+
+**Import Congressional Districts Shapefile**
+```python
+shapefile_path = notebook_directory / '../data/spatial/cd_shapefile/USA_118th_Congressional_Districts.shp'
+districts_gdf = gpd.read_file(shapefile_path)
+
+districts_gdf = districts_gdf[['STATE_NAME','DISTRICTID', 'CDFIPS', 'geometry']]
+
+flipped_states = ['Arizona', 'Georgia', 'Michigan', 'Pennsylvania', 'Wisconsin']
+
+districts_gdf = districts_gdf[districts_gdf['STATE_NAME'].isin(flipped_states)]
+```
+
+**Merge Precinct Results with Congressional Districts**
+```python
+# Define the list of states and years
+states = ['az', 'ga', 'mi', 'pa', 'wi']
+
+state_mapping = {
+    'az': 'Arizona',
+    'ga': 'Georgia',
+    'mi': 'Michigan',
+    'pa': 'Pennsylvania',
+    'wi': 'Wisconsin'
+}
+
+years = ['2016', '2020']
+
+# Initialize an empty dictionary to store the merged results for each state
+aggregated_df = {}
+
+# Loop over each state
+for state in states:
+    # Get congressional district GeoDataFrame
+    districts_gdf = state_districts_gdfs[state_mapping[state]]
+
+    # Aggregate 2016 precinct results
+    gdf_2016 = shapefiles[f"{state}_2016"]
+    result_2016 = sw.sum_within(
+        input_shapefile=districts_gdf,
+        input_summary_features=gdf_2016,
+        columns=["G16PRERTRU", "G16PREDCLI", "G16PRE_TOTAL"],
+        key="DISTRICTID",
+        join_type='left'
+    )
+
+    # Aggregate 2020 precinct results
+    gdf_2020 = shapefiles[f"{state}_2020"]
+    result_2020 = sw.sum_within(
+        input_shapefile=districts_gdf,
+        input_summary_features=gdf_2020,
+        columns=["G20PRERTRU", "G20PREDBID", "G20PRE_TOTAL"],
+        key="DISTRICTID",
+        join_type='left'
+    )
+
+    # Merge the results for 2016 and 2020
+    merged_result = pd.merge(result_2016, result_2020, on=['STATE_NAME', 'DISTRICTID', 'CDFIPS', 'geometry'], how='outer')
+
+    # Replace NaN values with 0
+    merged_result.fillna(0, inplace=True)
+
+    # Store merged data in dictionary
+    aggregated_df[state] = merged_result
+
+# Concatenate merged GeoDataFrames
+aggregated_df = pd.concat(aggregated_df.values())
+aggregated_df.reset_index(drop=True, inplace=True)
+
+aggregated_df.tail()
+```
+
+| STATE_NAME   |   DISTRICTID |   CDFIPS |   G16PRERTRU |   G16PREDCLI |   G16PRE_TOTAL |   G20PRERTRU |   G20PREDBID |   G20PRE_TOTAL |
+|:-------------|-------------:|---------:|-------------:|-------------:|---------------:|-------------:|-------------:|---------------:|
+| Wisconsin    |         5504 |        4 |      74653.9 |       241272 |         335021 |      77983.4 |       258995 |         342813 |
+| Wisconsin    |         5505 |        5 |     249437   |       137887 |         414089 |     282485   |       176109 |         466061 |
+| Wisconsin    |         5506 |        6 |     206492   |       142796 |         375255 |     236686   |       171559 |         415799 |
+| Wisconsin    |         5507 |        7 |     214524   |       138537 |         375007 |     250155   |       165808 |         423094 |
+| Wisconsin    |         5508 |        8 |     201207   |       138808 |         361474 |     233555   |       169558 |         410023 |
+
+
+<br>
+
+
+**Compare top 20 Largest Shifts from 2016 to 2020 in Flipped States**
+
+Now that we have summarized the precinct level election results onto congressional districts we can easily generate Trump's margin in both years by district and quantify the shift in Trump's margin from 2016 to 2020.
+
+![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/f9a50245-9261-474a-b4a7-73d4cdcdde77)
+
+We can see that Georgia's 6th Congressional District had the largest shift torwards the Democratic Presidential Candidate in 2020, with Georgia 7 and Georgia 11 not far behind.
 
 
 
