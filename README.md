@@ -4,9 +4,9 @@ Spatial Summarize Within is a Python package designed to simplify the process of
 # Table of Contents
 - [Installation](#installation)
 - [Use Cases](#use-cases)
-  - [Example 1: Legislative Redistricting](#example-1-legislative-redistricting)
-  - [Example 2: Overlaying Election Results on to Novel Geometries](#example-2-overlaying-election-results-on-to-novel-geometries)
-  - [Example 3: Bulk Aggregation of 10 Precinct Shapefiles On To Congressional Districts](#example-3-bulk-aggregation-of-10-precinct-shapefiles-on-to-congressional-districts)
+  - [Example 1: Bulk Aggregation of 10 Precinct Shapefiles On To Congressional Districts](#example-1-bulk-aggregation-of-10-precinct-shapefiles-on-to-congressional-districts)
+  - [Example 2: Legislative Redistricting](#example-2-legislative-redistricting)
+  - [Example 3: Overlaying Election Results on to Novel Geometries](#example-3-overlaying-election-results-on-to-novel-geometries)
 - [Detailed Usage](#detailed-usage)
 - [Functions](#functions)
   - [sum_within](#sum_within)
@@ -29,214 +29,8 @@ Spatial Summarize Within has the following dependencies, which will be installed
 * `shapely`
 
 # Use Cases
-## Example 1: Legislative Redistricting
-**The Problem:** During the process of redistricting, existing boundaries of legislative districts are redrawn based on new census data. This poses a unique challenge in that historical precinct data often don't perfectly align with these new boundaries. Furthermore, updated precincts that align with the new districts may not be released until months after the districts are finalized.
 
-For this example, let's calculate the results of the 2020 Presidential Election in the new Legislative Districts, and see how the results compare to the old districts. We will do this by using the spatial_summarize_within package to aggregate the Presidential results from a precinct level to the district level. This will provide us with more accurate and timely insights into the partisan nature of these new districts based on historical data, even before the release of new precincts.
-
-![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/38cf13ee-3483-4810-81fe-119ab79e9595)
-
-**Import Spatial_Summarize_Within Package**
-```python
-import spatial_summarize_within as sw
-```
-
-**Import Legislative District Shapefiles**
-```python
-# Old Legislative Districts
-old_LD_sf = gpd.read_file("../data/spatial/AZ_LD_2018/tl_2018_04_sldu.shp")
-
-# New Legislative Districts
-new_LD_sf = gpd.read_file("../data/spatial/AZ_LD_2022/Approved_Official_Legislative_Map.shp")
-```
-
-**Import Precinct Shapefile**
-```python
-precinct_sf = gpd.read_file("../data/spatial/precincts_2018/az_vtd_2018_new_pima.shp")
-```
-**Import Flat Election Results**
-```python
-results_2020 = pd.read_table(../data/raw/results_2020.csv, sep=",")
-results_2020.head()
-```
-| PRECINCT  | BIDEN | JORGENSEN | TRUMP | TOTAL_VOTES |
-|-----------|-------|-----------|-------|-------------|
-| MC_ACACIA | 1770  | 61        | 1475  | 3306        |
-| MC_ACOMA  | 1029  | 45        | 1788  | 2862        |
-| MC_ACUNA  | 1655  | 13        | 328   | 1996        |
-| MC_ADOBE  | 875   | 44        | 1192  | 2111        |
-| MC_ADORA  | 2853  | 91        | 4067  | 7011        |
-
-**Merge Results with Precinct Shapefile**
-```python
-precinct_sf = precinct_sf.merge(results_2020, on = "PRECINCT")
-```
-**Summarize Results by Old Legislative District**
-```python
-sum_old_ld = sw.sum_within(
-    input_shapefile=old_LD_sf,
-    input_summary_features=precinct_sf,
-    columns=[
-        "2020_PRESIDENT_REP",
-        "2020_PRESIDENT_DEM",
-        "2020_PRESIDENT_OTHER",
-        "2020_PRESIDENT_TOTAL",
-    ],
-    key="DISTRICT",
-    join_type='left'
-)
-```
-
-```python
-sum_old_ld.head()
-```
-
-| DISTRICT                | BIDEN | JORGENSEN | TRUMP | TOTAL_VOTES |
-|-------------------------|-------|-----------|-------|-------------|
-| 1 | 48,541| 2,061     | 102,121| 152,723    |
-| 2 | 53,679| 1,174     | 33,989 | 88,843     |
-| 3 | 59,147| 1,138     | 21,416 | 81,701     |
-| 4 | 42,368| 1,233     | 32,428 | 76,029     |
-| 5 | 26,758| 1,389     | 83,525 | 111,672    |
-
-<br>
-
-**Summarize Results by New Legislative District**
-```python
-sum_new_ld = sw.sum_within(
-    input_shapefile=new_LD_sf,
-    input_summary_features=precinct_sf,
-    columns=[
-        "2020_PRESIDENT_REP",
-        "2020_PRESIDENT_DEM",
-        "2020_PRESIDENT_OTHER",
-        "2020_PRESIDENT_TOTAL",
-    ],
-    key="DISTRICT",
-    join_type='left'
-)
-```
-
-```python
-sum_new_ld.head()
-```
-
-| DISTRICT | BIDEN  | JORGENSEN | TRUMP   | TOTAL_VOTES |
-|----------|--------|-----------|---------|-------------|
-| 1        | 49,773 | 2,095     | 91,634  | 143,501     |
-| 2        | 52,539 | 1,965     | 54,397  | 108,901     |
-| 3        | 62,934 | 1,480     | 96,610  | 161,024     |
-| 4        | 77,112 | 1,839     | 75,789  | 154,741     |
-| 5        | 76,073 | 1,733     | 32,483  | 110,289     |
-
-<br>
-
-**Compare New District Lean to Old District Lean**
-
-Now that we have summarized precinct level election results from 2020 on the old legislative districts and the new districts, we can get a better idea of how the districts are changing. 
-
-![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/f2e3d2cb-ac91-4c06-a930-ff9dcb4626ce)
-
-We can see that the new legislative districts that took effect in 2022 are less competitive than they were previously, with toss-up districts dropping from 5 to 2.
-
-|                         | Old Districts | New Districts |
-|-------------------------|---------------|---------------|
-| Median Margin           | 0.4%         | -1.7%        |
-| Average Margin          | -3.7%        | -5.0%        |
-| Standard Deviation      | 27.3%        | 27.0%        |
-| Minimum Margin          | -51.7%       | -51.5%       |
-| Maximum Margin          | 50.7%        | 50.8%        |
-
-
-|                       | Old Districts | New Districts |
-|-----------------------|---------------|---------------|
-| Safe Republican       | 10            | 9             |
-| Likely Republican     | 1             | 1             |
-| Lean Republican       | 1             | 4             |
-| Toss-Up               | 5             | 2             |
-| Lean Democrat         | 1             | 0             |
-| Likely Democrat       | 1             | 2             |
-| Safe Democrat         | 11            | 12            |
-
-
-<br>
-<br>
-
-## Example 2: Overlaying Election Results on to Novel Geometries
-**The Problem:**
-Election results are typically broken down by precinct and county, but often other geographies are more useful to contextuilize results. For example, understanding election results within the boundaries of a city, town, school district, zip code, etc., can help to provide a deeper context for the results. However, obtaining this level of detail accurately can be challenging due to uneven overlapping of precincts or non-standard geographical boundaries. Spatial Summarize Within can be used to accurately overlay election results onto novel geometries, providing a clearer understanding of voting patterns within these entities.
-
-Let's illustrate this with the following example where we overlay the 2021 Virginia Governor election results onto the city boundaries within the state of Virginia.
-
-![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/f6616dca-255c-4f7d-ad5b-2317a28ddf42)
-
-<br>
-
-**Import Spatial_Summarize_Within Package**
-```python
-import spatial_summarize_within as sw
-```
-
-**Import Virginia City Shapefiles**
-```python
-# Virginia Cities
-city_sf = gpd.read_file("../data/spatial/VA_CITIES/va_cities.shp")
-```
-
-**Import 2021 Virginia Governor Election Results**
-```python
-results_pcts_2021 = gpd.read_file("../data/spatial/2021 results shapefile/va_2021.shp")
-results_pcts_2021.head()
-```
-
-| PRECINCT       | Youngkin | McAuliffe | Other | geometry |
-|----------------|----------|-----------|-------|----------|
-| Chincoteague   | 1300     | 712       | 11    |          |
-| Atlantic       | 553      | 135       | 3     |          |
-| Greenbackville | 909      | 329       | 5     |          |
-| New Church     | 561      | 477       | 9     |          |
-| Bloxom         | 373      | 142       | 1     |          |
-
-
-**Summarize Results by City**
-```python
-results_by_city = sw.sum_within(
-    input_shapefile=city_sf,
-    input_summary_features=results_pcts_2021,
-    columns=[
-        'Youngkin', 
-        'McAuliffe',
-        'Other', 
-    ],
-    key="CITY_NAME",
-    join_type='left'
-)
-```
-
-```python
-results_by_city.head()
-```
-
-| CITY_NAME          | Youngkin | McAuliffe | Other   |
-|---------------|----------|-----------|---------|
-| Virginia Beach| 86939.22 | 73887.13  | 1257.43 |
-| Richmond      | 15675.97 | 61762.11  | 2494.58 |
-| Alexandria    | 14090.16 | 44102.62  | 452.83  |
-| Chesapeake    | 48064.67 | 42885.88  | 712.39  |
-| Norfolk       | 18892.18 | 40352.99  | 849.74  |
-
-<br>
-
-**Visualize Election Results by City**
-
-By summarizing the results of the election by city we have added context to the results and can see that unsuprisngly, voters within the proper city boundaries (which are quite small), largely voted for the Democrat. This implies that Youngkin's 2021 success largely came from suburbs and rural areas which we could prove through further analysis.
-
-![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/bae07aba-12e2-44d3-b26e-2e1aa20dc7a5)
-
-<br>
-<br>
-
-## Example 3: Bulk Aggregation of 10 Precinct Shapefiles On To Congressional Districts
+## Example 1: Bulk Aggregation of 10 Precinct Shapefiles On To Congressional Districts
 **The Problem:**
 Precinct-level election results are published per election and per state. When aiming to analyze multiple states at once, or one state over multiple elections, the process is traditionally extremely time-consuming and involves manually aggregating each file individually. Using spatial_summarize_within, you can accelerate the process of analyzing multiple elections, from multiple states, in multiple years by aggregating many shapefiles in a single sequence. 
 
@@ -408,6 +202,214 @@ We can see that Georgia's 6th Congressional District had the largest shift torwa
 
 <br>
 <br>
+
+## Example 2: Legislative Redistricting
+**The Problem:** During the process of redistricting, existing boundaries of legislative districts are redrawn based on new census data. This poses a unique challenge in that historical precinct data often don't perfectly align with these new boundaries. Furthermore, updated precincts that align with the new districts may not be released until months after the districts are finalized.
+
+For this example, let's calculate the results of the 2020 Presidential Election in the new Legislative Districts, and see how the results compare to the old districts. We will do this by using the spatial_summarize_within package to aggregate the Presidential results from a precinct level to the district level. This will provide us with more accurate and timely insights into the partisan nature of these new districts based on historical data, even before the release of new precincts.
+
+![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/38cf13ee-3483-4810-81fe-119ab79e9595)
+
+**Import Spatial_Summarize_Within Package**
+```python
+import spatial_summarize_within as sw
+```
+
+**Import Legislative District Shapefiles**
+```python
+# Old Legislative Districts
+old_LD_sf = gpd.read_file("../data/spatial/AZ_LD_2018/tl_2018_04_sldu.shp")
+
+# New Legislative Districts
+new_LD_sf = gpd.read_file("../data/spatial/AZ_LD_2022/Approved_Official_Legislative_Map.shp")
+```
+
+**Import Precinct Shapefile**
+```python
+precinct_sf = gpd.read_file("../data/spatial/precincts_2018/az_vtd_2018_new_pima.shp")
+```
+**Import Flat Election Results**
+```python
+results_2020 = pd.read_table(../data/raw/results_2020.csv, sep=",")
+results_2020.head()
+```
+| PRECINCT  | BIDEN | JORGENSEN | TRUMP | TOTAL_VOTES |
+|-----------|-------|-----------|-------|-------------|
+| MC_ACACIA | 1770  | 61        | 1475  | 3306        |
+| MC_ACOMA  | 1029  | 45        | 1788  | 2862        |
+| MC_ACUNA  | 1655  | 13        | 328   | 1996        |
+| MC_ADOBE  | 875   | 44        | 1192  | 2111        |
+| MC_ADORA  | 2853  | 91        | 4067  | 7011        |
+
+**Merge Results with Precinct Shapefile**
+```python
+precinct_sf = precinct_sf.merge(results_2020, on = "PRECINCT")
+```
+**Summarize Results by Old Legislative District**
+```python
+sum_old_ld = sw.sum_within(
+    input_shapefile=old_LD_sf,
+    input_summary_features=precinct_sf,
+    columns=[
+        "2020_PRESIDENT_REP",
+        "2020_PRESIDENT_DEM",
+        "2020_PRESIDENT_OTHER",
+        "2020_PRESIDENT_TOTAL",
+    ],
+    key="DISTRICT",
+    join_type='left'
+)
+```
+
+```python
+sum_old_ld.head()
+```
+
+| DISTRICT                | BIDEN | JORGENSEN | TRUMP | TOTAL_VOTES |
+|-------------------------|-------|-----------|-------|-------------|
+| 1 | 48,541| 2,061     | 102,121| 152,723    |
+| 2 | 53,679| 1,174     | 33,989 | 88,843     |
+| 3 | 59,147| 1,138     | 21,416 | 81,701     |
+| 4 | 42,368| 1,233     | 32,428 | 76,029     |
+| 5 | 26,758| 1,389     | 83,525 | 111,672    |
+
+<br>
+
+**Summarize Results by New Legislative District**
+```python
+sum_new_ld = sw.sum_within(
+    input_shapefile=new_LD_sf,
+    input_summary_features=precinct_sf,
+    columns=[
+        "2020_PRESIDENT_REP",
+        "2020_PRESIDENT_DEM",
+        "2020_PRESIDENT_OTHER",
+        "2020_PRESIDENT_TOTAL",
+    ],
+    key="DISTRICT",
+    join_type='left'
+)
+```
+
+```python
+sum_new_ld.head()
+```
+
+| DISTRICT | BIDEN  | JORGENSEN | TRUMP   | TOTAL_VOTES |
+|----------|--------|-----------|---------|-------------|
+| 1        | 49,773 | 2,095     | 91,634  | 143,501     |
+| 2        | 52,539 | 1,965     | 54,397  | 108,901     |
+| 3        | 62,934 | 1,480     | 96,610  | 161,024     |
+| 4        | 77,112 | 1,839     | 75,789  | 154,741     |
+| 5        | 76,073 | 1,733     | 32,483  | 110,289     |
+
+<br>
+
+**Compare New District Lean to Old District Lean**
+
+Now that we have summarized precinct level election results from 2020 on the old legislative districts and the new districts, we can get a better idea of how the districts are changing. 
+
+![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/f2e3d2cb-ac91-4c06-a930-ff9dcb4626ce)
+
+We can see that the new legislative districts that took effect in 2022 are less competitive than they were previously, with toss-up districts dropping from 5 to 2.
+
+|                         | Old Districts | New Districts |
+|-------------------------|---------------|---------------|
+| Median Margin           | 0.4%         | -1.7%        |
+| Average Margin          | -3.7%        | -5.0%        |
+| Standard Deviation      | 27.3%        | 27.0%        |
+| Minimum Margin          | -51.7%       | -51.5%       |
+| Maximum Margin          | 50.7%        | 50.8%        |
+
+
+|                       | Old Districts | New Districts |
+|-----------------------|---------------|---------------|
+| Safe Republican       | 10            | 9             |
+| Likely Republican     | 1             | 1             |
+| Lean Republican       | 1             | 4             |
+| Toss-Up               | 5             | 2             |
+| Lean Democrat         | 1             | 0             |
+| Likely Democrat       | 1             | 2             |
+| Safe Democrat         | 11            | 12            |
+
+
+<br>
+<br>
+
+## Example 3: Overlaying Election Results on to Novel Geometries
+**The Problem:**
+Election results are typically broken down by precinct and county, but often other geographies are more useful to contextuilize results. For example, understanding election results within the boundaries of a city, town, school district, zip code, etc., can help to provide a deeper context for the results. However, obtaining this level of detail accurately can be challenging due to uneven overlapping of precincts or non-standard geographical boundaries. Spatial Summarize Within can be used to accurately overlay election results onto novel geometries, providing a clearer understanding of voting patterns within these entities.
+
+Let's illustrate this with the following example where we overlay the 2021 Virginia Governor election results onto the city boundaries within the state of Virginia.
+
+![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/f6616dca-255c-4f7d-ad5b-2317a28ddf42)
+
+<br>
+
+**Import Spatial_Summarize_Within Package**
+```python
+import spatial_summarize_within as sw
+```
+
+**Import Virginia City Shapefiles**
+```python
+# Virginia Cities
+city_sf = gpd.read_file("../data/spatial/VA_CITIES/va_cities.shp")
+```
+
+**Import 2021 Virginia Governor Election Results**
+```python
+results_pcts_2021 = gpd.read_file("../data/spatial/2021 results shapefile/va_2021.shp")
+results_pcts_2021.head()
+```
+
+| PRECINCT       | Youngkin | McAuliffe | Other | geometry |
+|----------------|----------|-----------|-------|----------|
+| Chincoteague   | 1300     | 712       | 11    |          |
+| Atlantic       | 553      | 135       | 3     |          |
+| Greenbackville | 909      | 329       | 5     |          |
+| New Church     | 561      | 477       | 9     |          |
+| Bloxom         | 373      | 142       | 1     |          |
+
+
+**Summarize Results by City**
+```python
+results_by_city = sw.sum_within(
+    input_shapefile=city_sf,
+    input_summary_features=results_pcts_2021,
+    columns=[
+        'Youngkin', 
+        'McAuliffe',
+        'Other', 
+    ],
+    key="CITY_NAME",
+    join_type='left'
+)
+```
+
+```python
+results_by_city.head()
+```
+
+| CITY_NAME          | Youngkin | McAuliffe | Other   |
+|---------------|----------|-----------|---------|
+| Virginia Beach| 86939.22 | 73887.13  | 1257.43 |
+| Richmond      | 15675.97 | 61762.11  | 2494.58 |
+| Alexandria    | 14090.16 | 44102.62  | 452.83  |
+| Chesapeake    | 48064.67 | 42885.88  | 712.39  |
+| Norfolk       | 18892.18 | 40352.99  | 849.74  |
+
+<br>
+
+**Visualize Election Results by City**
+
+By summarizing the results of the election by city we have added context to the results and can see that unsuprisngly, voters within the proper city boundaries (which are quite small), largely voted for the Democrat. This implies that Youngkin's 2021 success largely came from suburbs and rural areas which we could prove through further analysis.
+
+![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/bae07aba-12e2-44d3-b26e-2e1aa20dc7a5)
+
+<br>
+<br>
+
 
 # Detailed Usage
 
