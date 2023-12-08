@@ -238,7 +238,7 @@ By summarizing the results of the election by city we have added context to the 
 
 ## Example 3: Bulk Aggregation of 10 Precinct Shapefiles On To Congressional Districts
 **The Problem:**
-Precinct-level election results are published per election and per state. When aiming to analyze multiple states at once, or one state over multiple elections, the process is traditionally extremely time-consuming and involves manually aggregating each file individually. Using spatial_summarize_within, you can accelerate this process by aggregating multiple precinct shapefiles at once in seconds.
+Precinct-level election results are published per election and per state. When aiming to analyze multiple states at once, or one state over multiple elections, the process is traditionally extremely time-consuming and involves manually aggregating each file individually. Using spatial_summarize_within, you can accelerate the process of analyzing multiple elections, from multiple states, in multiple years by aggregating many shapefiles in a single sequence. 
 
 In this example, we will gather precinct-level election results from 2016 and 2020 in the five states that flipped from Republican to Democrat in the 2020 Presidential Election. We use [Harvard Dataverse](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/NH5S2I)'s data to ensure a standardized format. We will then aggregate the 2016 data and the 2020 data, and merge it into one file so we can analyze which Congressional Districts saw the biggest shifts towards Democrats from 2016 to 2020.
 
@@ -248,6 +248,7 @@ import spatial_summarize_within as sw
 ```
 
 **Import Precinct Result Shapefiles**
+As we import the 10 precinct shapefiles, we are also filtering the data to the Presidential contest, creating a total vote column, and standardizing the column names.
 ```python
 # set directory
 notebook_directory = Path(os.getcwd())
@@ -394,7 +395,8 @@ aggregated_df.tail()
 
 Now that we have summarized the precinct level election results onto congressional districts we can easily generate Trump's margin in both years by district and quantify the shift in Trump's margin from 2016 to 2020.
 
-![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/f9a50245-9261-474a-b4a7-73d4cdcdde77)
+![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/6beb61e3-d563-4ae1-b210-906eb194656f)
+
 
 We can see that Georgia's 6th Congressional District had the largest shift torwards the Democratic Presidential Candidate in 2020, with Georgia 7 and Georgia 11 not far behind.
 
