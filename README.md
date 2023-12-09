@@ -36,7 +36,8 @@ Precinct-level election results are published per election and per state. When a
 
 In this example, we will gather precinct-level election results from 2016 and 2020 in the five states that flipped from Republican to Democrat in the 2020 Presidential Election. We use [Harvard Dataverse](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/NH5S2I)'s data to ensure a standardized format. We will then aggregate the 2016 data and the 2020 data, and merge it into one file so we can analyze which Congressional Districts saw the biggest shifts towards Democrats from 2016 to 2020.
 
-![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/78276947-b1c0-4629-af0e-7b613fc18c66)
+![image](https://github.com/LandonWall/spatial_summarize_within/assets/45885744/59395043-dbee-4957-ae0e-aa78ddb5c363)
+
 
 
 
