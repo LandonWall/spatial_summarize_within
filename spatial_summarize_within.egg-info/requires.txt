@@ -1,3 +1,2 @@
 geopandas
 pandas
-shapely
